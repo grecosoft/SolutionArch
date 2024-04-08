@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>$(VersionSuffix)</PackageVersion>
+    <PackageId>NetFusion.Solution.Templates</PackageId>
+    <Title>NetFusion Solution Templates</Title>
+    <Authors>NetFusion-Contrib</Authors>
+    <description>Templates for creating a Microservice based Solution.</description>	
+    <PackageTags>dotnet-new;templates;microservice;solution;aks;acr;terraform;helm;github;workflows</PackageTags>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageIcon>utilities.png</PackageIcon>
+
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+  	<None Include="utilities.png" Pack="true" PackagePath="\" />
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>

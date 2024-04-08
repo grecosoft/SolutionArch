@@ -1,0 +1,62 @@
+name: Solution dotnet Templates
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'utilities/dotnet/solution/**'
+env:
+  templateRoot: ./utilities/dotnet/solution/templates
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    env:
+      buildVersion: '8.1.${{github.run_number}}'
+      nugetAuthToken: ${{ secrets.NUGET_PACKAGE_TOKEN }}
+
+    steps:
+    - name: Checkout dotnet Templates
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout: 'utilities/dotnet/solution'
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Solution Template Dependencies
+      run: dotnet restore $templateRoot/solution/shared/src/SolutionName.sln
+
+    - name: Restore Microservice Template Dependencies
+      run: dotnet restore $templateRoot/microservice/src/Solution.Context.sln
+
+    - name: Build Solution Template
+      run: |
+        dotnet build $templateRoot/solution/shared/src/SolutionName.sln \
+          --no-restore \
+          --version-suffix $buildVersion \
+          -c Release 
+
+    - name: Build Microservice Template
+      run: |
+        dotnet build $templateRoot/microservice/src/Solution.Context.sln \
+        --no-restore \
+        --version-suffix $buildVersion \
+        -c Release  
+
+    - name: Package Templates
+      run: |
+        dotnet pack ./utilities/dotnet/solution/templatepack.csproj \
+          --version-suffix $buildVersion \
+          -o ./nugets
+
+    - name: Push Template to NugGet Registry
+      run: |
+        dotnet nuget push ./nugets/*.nupkg \
+          -s https://api.nuget.org/v3/index.json \
+          -k $nugetAuthToken 
+
+
