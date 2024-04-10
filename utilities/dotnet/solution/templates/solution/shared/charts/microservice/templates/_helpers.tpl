@@ -4,6 +4,10 @@
 {{- .Values.solution | lower }}
 {{- end }}
 
+{{- define "solution.envName" }}
+{{- get .Values.envNames .Values.environment }}
+{{- end }}
+
 {{- define "microservice.name"  }}
 {{- .Values.name | lower }}
 {{- end }}

@@ -11,9 +11,13 @@ spec:
   {{- end}}
   rules:
     - matches:
-        - path:
-            type: PathPrefix
-            value: /{{ (include "microservice.name" .) | replace "-" "/" }}/
+      - path:
+          type: PathPrefix
+          value: /{{ (include "solution.name" .) }}/{{ (include "microservice.name" .) }}/    
+        headers:
+        - type: Exact
+          name: env
+          value: {{ .Values.environment }}
       filters: 
         - type: URLRewrite
           urlRewrite:

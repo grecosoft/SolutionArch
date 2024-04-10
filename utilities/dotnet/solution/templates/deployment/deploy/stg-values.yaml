@@ -1,4 +1,4 @@
-environment: dev
+environment: stg
 
 replicas: 1
 

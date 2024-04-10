@@ -5,7 +5,7 @@ namespace Solution.Context.WebApi.Plugin;
 public class WebApiPlugin : PluginBase
 {
     public const string HostId = "[nf:host-id]";
-    public const string HostName = "[nf:microservice-name]";
+    public const string HostName = "[nf:solution-name]-[nf:service-name]";
 
     public override PluginTypes PluginType => PluginTypes.HostPlugin;
     public override string PluginId => HostId;
