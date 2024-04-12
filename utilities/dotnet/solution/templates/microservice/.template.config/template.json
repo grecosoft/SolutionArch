@@ -20,6 +20,20 @@
         "toLower": true
       }
     },
+    "terraform-resource-group": {
+      "type": "parameter",
+      "description": "The name of the Azure resource group containing the Terraform state.",
+      "isRequired": true,
+      "datatype": "string",
+      "replaces": "[nf:terraform-resource-group]"
+    },
+    "terraform-storage-account": {
+      "type": "parameter",
+      "description": "The name of the Azure storage account containing the Terraform state.",
+      "isRequired": true,
+      "datatype": "string",
+      "replaces": "[nf:terraform-storage-account]"
+    },
     "solution-name": {
       "type": "parameter",
       "description": "The name of the solution to which the microservice belongs. (example: homelink)",

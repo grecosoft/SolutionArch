@@ -2,9 +2,6 @@ terraform {
   required_version = ">=1.0"
 
   backend "azurerm" {
-    resource_group_name  = "[nf:terraform-resource-group]"
-    storage_account_name = "[nf:terraform-storage-account]"
-    container_name       = "[nf:solution-name]"
     key                  = "solution.tfstate"
   }
   required_providers {

@@ -2,9 +2,9 @@ data "terraform_remote_state" "solution" {
   backend = "azurerm"
 
   config = {
-    resource_group_name  = "Terraform"
-    storage_account_name = "terraformstate06410"
-    container_name       = "[nf:solution-name]"
+    resource_group_name  = var.resource_group_name
+    storage_account_name = var.storage_account_name
+    container_name       = var.container_name
     key                  = "solution.tfstate"
   }
 }
