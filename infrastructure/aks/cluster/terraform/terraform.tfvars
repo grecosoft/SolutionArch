@@ -1,0 +1,13 @@
+resource_group_name             = "kube-cluster"
+location                        = "eastus"
+aks_name                        = "aksmscluster"
+aks_container_registry_sku      = "Basic"
+aks_admin_username              = "azureadmin"
+aks_vnet_name                   = "aks-vnet"
+node_pool_name                  = "agentpool"
+node_pool_vm_size               = "Standard_D2_v2"
+node_pool_count                 = 1
+network_plugin                  = "azure"
+network_load_balancer_sku       = "standard"
+network_vnet_address_space      = ["10.224.0.0/12"]
+network_subnet_address_prefixes = ["10.224.0.0/16"]
