@@ -1,6 +1,6 @@
 resource_group_name             = "kube-cluster"
 location                        = "eastus"
-aks_name                        = "aksmscluster"
+aks_name                        = "mscluster"
 aks_container_registry_sku      = "Basic"
 aks_admin_username              = "azureadmin"
 aks_vnet_name                   = "aks-vnet"
