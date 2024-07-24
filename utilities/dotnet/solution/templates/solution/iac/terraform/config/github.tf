@@ -6,7 +6,7 @@ data "azurerm_subscription" "current" {
 }
 
 resource "azuread_application" "github_workflow" {
-    display_name = "github-workflow-${lower(var.solution.name)}-${var.solution.environment}"
+  display_name = "github-workflow-${lower(var.solution.name)}-${var.solution.environment}"
 }
 
 resource "azuread_service_principal" "github_workflow_sp" {

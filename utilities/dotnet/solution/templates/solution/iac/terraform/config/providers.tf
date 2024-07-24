@@ -2,7 +2,7 @@ terraform {
   required_version = ">=1.0"
 
   backend "azurerm" {
-    key                  = "solution.tfstate"
+    key = "solution.tfstate"
   }
   required_providers {
 
@@ -31,7 +31,7 @@ terraform {
 provider "azurerm" {
   features {}
   subscription_id = var.subscriptionId
-  tenant_id = var.tenantid 
+  tenant_id       = var.tenantid
 }
 
 // The org_service_url and personal_access_token must be set when executing the configuration.

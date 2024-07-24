@@ -3,7 +3,7 @@
 // the solution.
 // -----------------------------------------------------------------------
 data "azuredevops_project" "solution_project" {
-  name               = var.solution.name
+  name = var.solution.name
 }
 
 data "azuredevops_git_repository" "solution_repo" {
@@ -15,7 +15,7 @@ data "azuredevops_git_repository" "solution_repo" {
 // Create application and service principal for federation
 // -----------------------------------------------------------------------
 resource "azuread_application" "ado_pipeline" {
-    display_name = "ado-pipeline-${lower(var.solution.name)}-${var.solution.environment}"
+  display_name = "ado-pipeline-${lower(var.solution.name)}-${var.solution.environment}"
 }
 
 resource "azuread_service_principal" "ado_pipeline_sp" {
@@ -136,26 +136,36 @@ resource "azuredevops_variable_group" "developer" {
 // Create pipelines for the shared solution items:
 // -----------------------------------------------------------------------
 locals {
-  solution_pipelines = [
-    "SolutionName.Common",
-    "HelmCharts"
+  solution_pipelines = [{
+    name        = "SolutionName.Common"
+    path_filter = "shared/src"
+    }, {
+    name        = "HelmCharts"
+    path_filter = "shared/charts"
+    }
   ]
 }
 
 resource "azuredevops_build_definition" "solution_builds" {
-  for_each = toset(local.solution_pipelines) 
+  for_each   = { for pipeline in local.solution_pipelines : pipeline.name => pipeline }
   project_id = data.azuredevops_project.solution_project.id
   name       = each.key
 
   ci_trigger {
-    use_yaml = false
+    override {
+      branch_filter {
+        include = ["master"]
+      }
+      path_filter {
+        include = [each.value.path_filter]
+      }
+    }
   }
 
   repository {
-    repo_type             = "TfsGit"
-    repo_id               = data.azuredevops_git_repository.solution_repo.id
-    branch_name           = "refs/heads/master"
-    yml_path              = "templates/${each.key}.yml"
-    service_connection_id = azuredevops_serviceendpoint_azurerm.devops_endpoint.id
+    repo_type   = "TfsGit"
+    repo_id     = data.azuredevops_git_repository.solution_repo.id
+    branch_name = "refs/heads/master"
+    yml_path    = "templates/${each.key}.yml"
   }
 }
