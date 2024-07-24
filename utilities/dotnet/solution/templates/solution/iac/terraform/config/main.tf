@@ -2,7 +2,6 @@ locals {
   unique_postfix = lower(random_string.unique_postfix.result)
 }
 
-
 resource "random_string" "unique_postfix" {
   length  = 7
   special = false

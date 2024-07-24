@@ -1,0 +1,93 @@
+# Builds image for microserivce that is validated and published to an image registry.
+parameters:
+  # Determines variable group defining values used to build, validate, and publish service image.
+  - name: environment
+    type: string
+
+  # Name of the solution the microserivce is a member and contained in name of created image.
+  - name: solutionName
+    type: string
+
+  # Name of microserivce and contained in the name of created image.
+  - name: serviceName
+    type: string
+
+  # Docker file used to build image for microservice.
+  - name: dockerFilePath
+    type: string
+
+  # The version used to tag the build image
+  - name: imageVersion
+    type: string
+
+jobs:
+  - job: 
+    variables:
+      - group: ${{ parameters.environment }}
+      - name: imageTag
+        value: $(EnvAcrEndpoint)/${{ parameters.solutionName }}/${{ parameters.serviceName }}:${{ parameters.imageVersion }}
+      - name: trivyVersion
+        value: '0.51.2'
+    steps:
+      - script: printenv
+        displayName: List Variables
+
+      - script: ls -R
+        displayName: List Sources
+
+      - task: AzureCLI@2
+        displayName: Azure CLI
+        inputs:
+          azureSubscription: AdoPipelineConnection
+          addSpnToEnvironment: true
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$servicePrincipalId" 
+            echo "##vso[task.setvariable variable=ARM_ID_TOEKN]$idToken"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$tenantId"
+
+      - script: |
+          az login --service-principal -u $(ARM_CLIENT_ID) \
+            --tenant $(ARM_TENANT_ID) \
+            --allow-no-subscriptions \
+            --federated-token $(ARM_ID_TOEKN)
+        displayName: Azure Login
+
+      - script: az acr login --name $(EnvAcrName)
+        displayName: Registry Login
+
+      - task: NuGetAuthenticate@1
+        displayName: Authenticate with NuGet Feed
+
+      - script: |
+          docker build ${{ parameters.dockerFilePath }} \
+            --tag $(imageTag) \
+            --build-arg NUGET_PASSWORD=$(System.AccessToken)
+        displayName: Build Microservice Image
+
+      - script: docker images
+        displayName: List Images
+
+      - script: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+        displayName: Download Trivy
+
+      - script: |
+          sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+        displayName: Install Trivy
+
+      - script: |
+          trivy image --ignore-unfixed $(imageTag) \
+            --exit-code 0 \
+            --format table \
+            --severity CRITICAL,HIGH
+        displayName: Scan Image
+
+      - script: docker image push $(imageTag)
+        displayName: Push Image to Registry
+
+      - publish: ${{ parameters.dockerFilePath }}/deploy
+        artifact: microservice-helm-settings
+        displayName: Archive Helm Environment Settings 
+        

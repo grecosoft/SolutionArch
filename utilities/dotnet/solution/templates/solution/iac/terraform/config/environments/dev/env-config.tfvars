@@ -1,5 +1,5 @@
 solution = {
-  cluster_resource_group = "[nf:aks-group]"
+  cluster_resource_group = "[nf:aks-resource-group]"
   cluster_name = "[nf:aks-name]"
   registry_name = "[nf:arc-name]"
   github_account = "[nf:github-account]"

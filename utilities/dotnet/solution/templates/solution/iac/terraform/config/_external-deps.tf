@@ -1,3 +1,8 @@
+data "azurerm_subscription" "subscription" {
+  subscription_id = var.subscriptionId
+}
+
+// Reference to the associated Kubernetes Cluster and Container Registry:
 data "azurerm_kubernetes_cluster" "k8s" {
   name                = var.solution.cluster_name
   resource_group_name = var.solution.cluster_resource_group

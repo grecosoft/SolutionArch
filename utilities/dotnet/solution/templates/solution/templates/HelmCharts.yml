@@ -1,0 +1,56 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - shared/charts
+
+pool:
+  vmImage: ubuntu-latest
+
+name: '1.0.$(Rev:r)'
+
+variables:
+  - group: dev
+
+  - name: solutionName
+    value: homelink
+
+  - name: netfusionVer
+    value: '8.0.42'
+
+steps:
+- task: HelmInstaller@1
+  displayName: Install Helm
+
+- script: |
+    helm package ./shared/charts/microservice \
+      --version $(Build.BuildNumber) \
+      --app-version $(netfusionVer)
+  displayName: Package Helm Chart
+  
+- task: AzureCLI@2
+  displayName: Azure CLI
+  inputs:
+    azureSubscription: AdoPipelineConnection
+    addSpnToEnvironment: true
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+     echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$servicePrincipalId" 
+     echo "##vso[task.setvariable variable=ARM_ID_TOEKN]$idToken"
+     echo "##vso[task.setvariable variable=ARM_TENANT_ID]$tenantId"
+
+- script: |
+   az login --service-principal -u $(ARM_CLIENT_ID) \
+     --tenant $(ARM_TENANT_ID) \
+     --allow-no-subscriptions \
+     --federated-token $(ARM_ID_TOEKN)
+  displayName: Azure Login
+
+- script: az acr login --name $(EnvAcrName)
+  displayName: Registry Login
+
+- script: helm push microservice-$(Build.BuildNumber).tgz oci://$(EnvAcrName).azurecr.io/$(solutionName)/charts
+  displayName: Push Helm Chart to Repo

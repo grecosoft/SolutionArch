@@ -1,0 +1,106 @@
+parameters:
+  # The environment to which the image deployed.  Determines the variable group
+  # used to source environment specific values.
+  - name: environment
+    type: string
+
+  # The solution associated with the microservice being deployed.  Used to determine
+  # the Helm chart assocated with the solution and the Kubernetes namespace into which
+  # it should be deployed.
+  - name: solutionName
+    type: string
+
+  # The name of the microservice being deployed.  Used to identity the Helm release.
+  - name: serviceName
+    type: string
+
+  # The version of the service's image to be deployed using the helm chart.
+  - name: imageVersion
+    type: string
+
+  # The name of the Helm chart used to deploy the service.
+  - name: chartName
+    type: string
+
+  # The version of the Helm chart used to deploy the service.
+  - name: chartVersion
+    type: string
+
+jobs:
+  - deployment: 
+    environment: ${{ parameters.environment }}
+    variables:
+      - group: ${{ parameters.environment }}
+      - name: chartUrl
+        value: oci://$(EnvAcrEndpoint)/${{ parameters.solutionName }}/charts/${{ parameters.chartName }}
+      - name: currentDate
+        value: $[format('{0:yyyy}.{0:MM}.{0:dd}', pipeline.startTime)]
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: ls -R $(Agent.BuildDirectory)
+              displayName: List Artifacts
+
+            # Authenticate to Azure and login to the required resources:
+            - task: AzureCLI@2
+              displayName: Azure CLI
+              inputs:
+                azureSubscription: AdoPipelineConnection
+                addSpnToEnvironment: true
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$servicePrincipalId" 
+                  echo "##vso[task.setvariable variable=ARM_ID_TOEKN]$idToken"
+                  echo "##vso[task.setvariable variable=ARM_TENANT_ID]$tenantId"
+
+            - script: |
+                az login --service-principal -u $(ARM_CLIENT_ID) \
+                  --tenant $(ARM_TENANT_ID) \
+                  --allow-no-subscriptions \
+                  --federated-token $(ARM_ID_TOEKN)
+              displayName: Azure Login
+
+            - script: az acr login --name $(EnvAcrName)
+              displayName: Registry Login
+
+            - script: az aks get-credentials --resource-group $(EnvAksResourceGroup) --name $(EnvAksName)
+              displayName: AKS Login
+
+            # Deploy service by applyng Helm chart:
+            - task: HelmInstaller@1
+              displayName: Install Helm
+
+            # Call the App Configuration service, associated with the environment, and query the settings
+            # used by the helm chart required to configure the underlying Kubernetes resources:
+            - task: AzureAppConfiguration@7
+              inputs:
+                azureSubscription: 'AdoPipelineConnection'
+                AppConfigurationEndpoint: '$(EnvAppConfigEndpoint)'
+                KeyFilter: 'SolutionTenantId,SolutionClientId,SolutionKeyVaultName,SolutionAppConfigEndpoint'
+              displayName: Query Environment Settings
+
+            # Apply the Helm chart to deploy the microservice using the quired configuration settings and
+            # Helm variables for the specific environment being deployed:
+            - script: | 
+                helm upgrade ${{ parameters.serviceName }} $(chartUrl) \
+                  --install \
+                  --wait \
+                  --version ${{ parameters.chartVersion }} \
+                  -n ${{ parameters.solutionName }}-${{ parameters.environment }} \
+                  --values $(Agent.BuildDirectory)/microservice-helm-settings/common-values.yaml \
+                  --values $(Agent.BuildDirectory)/microservice-helm-settings/${{ parameters.environment }}-values.yaml \
+                  --set image.tag=${{ parameters.imageVersion }} \
+                  --set tenantId=$(SOLUTIONKEYVAULTNAME) \
+                  --set managedIdentityClientId=$(SOLUTIONCLIENTID) \
+                  --set appConfigEndpoint=$(SOLUTIONAPPCONFIGENDPOINT) \
+                  --set keyVaultName=$(SOLUTIONKEYVAULTNAME) 
+              displayName: Apply Helm Chart
+
+            - script: |
+                az appconfig kv set -n $(EnvAppConfigName) \
+                  --key ${{ parameters.serviceName }}/update_sentinel \
+                  --value $(currentDate) \
+                  --yes
+              displayName: Update configuration Sentinel

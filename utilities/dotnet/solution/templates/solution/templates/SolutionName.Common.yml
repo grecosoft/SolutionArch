@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - shared/src
+
+pool:
+  vmImage: ubuntu-latest
+
+name: '1.0.$(Rev:r)'
+
+stages:
+  - stage: Test_Service
+    jobs:
+      - template: shared/build-solution-pipeline.yml
+        parameters:
+          solutionPath: shared/src 
+          publishNuGets: true 
+          organization: grecobrian0516

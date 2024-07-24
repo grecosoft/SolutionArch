@@ -1,0 +1,32 @@
+{
+    "symbolInfo": {
+      "terraformResourceGroup": {
+        "longName": "terraform-resource-group",
+        "shortName": "terraform-rg"
+      },
+      "terraformStorageAccount": {
+        "longName": "terraform-storage-account",
+        "shortName": "terraform-sa"
+      },
+      "aksResourceGroup": {
+        "longName": "aks-resource-group",
+        "shortName": "aks-rg"
+      },
+      "aksName": {
+        "longName": "aks-name",
+        "shortName": "aks"
+      },
+      "acrName": {
+        "longName": "acr-name",
+        "shortName": "acr"
+      },
+      "devopsType": {
+        "longName": "devops-type",
+        "shortName": "devops"
+      },
+      "githubAccount": {
+        "longName": "github-account",
+        "shortName": "github"
+      }
+    }
+  }

@@ -1,0 +1,82 @@
+# Pipeline aggregating the steps to test, build, and deploy a microservice.
+parameters:
+  # The path containing the solution file to be build containing the service.
+  - name: solutionPath
+    type: string
+
+  # Name of the solution containing the service being built.  Used to name
+  # related items such as the built image and the Kubernetes Namespace.
+  - name: solutionName
+    type: string
+
+  # Name of the service.  Used to name related items such as the built image
+  # and the Helm release name.
+  - name: serviceName
+    type: string
+
+  # The path to the Docker file used to build the service's image.
+  - name: dockerFilePath
+    type: string
+
+  # The version used to tag the built image and specified as a Helm
+  # variable when deploying the service.
+  - name: imageVersion
+    type: string
+
+  # The name of the chart to be applied to deploy the service.
+  - name: chartName
+    type: string
+
+  # The version of teh chart to be applied to deploy the service.
+  - name: chartVersion
+    type: string
+
+stages:
+  - stage: Test_Service
+    jobs:
+      - template: build-solution-pipeline.yml
+        parameters:
+          solutionPath: ${{ parameters.solutionPath }}   
+
+  - stage: Build_Service
+    jobs:
+      - template: build-service-pipeline.yml
+        parameters:
+          environment:    dev
+          solutionName:   ${{ parameters.solutionName }}
+          serviceName:    ${{ parameters.serviceName }}
+          dockerFilePath: ${{ parameters.dockerFilePath }}
+          imageVersion:   ${{ parameters.imageVersion }}
+
+  - stage: Deploy_DEV
+    jobs:
+      - template: deploy-service-pipeline.yml
+        parameters:
+          environment:      dev
+          solutionName:     ${{ parameters.solutionName }}
+          serviceName:      ${{ parameters.serviceName }}
+          chartVersion:     ${{ parameters.chartVersion }}
+          imageVersion:     ${{ parameters.imageVersion }}
+          chartName:        ${{ parameters.chartName }}
+
+  - stage: Deploy_STG
+    jobs:
+      - template: deploy-service-pipeline.yml
+        parameters:
+          environment:      stg
+          solutionName:     ${{ parameters.solutionName }}
+          serviceName:      ${{ parameters.serviceName }}
+          chartVersion:     ${{ parameters.chartVersion }}
+          imageVersion:     ${{ parameters.imageVersion }}
+          chartName:        ${{ parameters.chartName }}
+
+  - stage: Deploy_PRD
+    jobs:
+      - template: deploy-service-pipeline.yml
+        parameters:
+          environment:      prd
+          solutionName:     ${{ parameters.solutionName }}
+          serviceName:      ${{ parameters.serviceName }}
+          chartVersion:     ${{ parameters.chartVersion }}
+          imageVersion:     ${{ parameters.imageVersion }}
+          chartName:        ${{ parameters.chartName }}

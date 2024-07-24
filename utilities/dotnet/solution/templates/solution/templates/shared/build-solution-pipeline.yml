@@ -1,0 +1,77 @@
+# Builds, tests, and optionally publishes assemblies as NuGet packages.
+parameters:
+  # Path to solution to be tested.
+  - name: solutionPath
+    type: string
+
+  # Determines if the projects within the solution should be published as NuGet packages.
+  - name: publishNuGets
+    type: boolean
+    default: false
+
+  # The orgization artifacts to which the NuGet packages should be published.
+  - name: organization
+    type: string
+    default: ''
+
+jobs:
+  - job: 
+    steps:
+      - script: printenv
+        displayName: List Variables
+
+      - script: ls -R
+        displayName: List Sources
+
+      - task: UseDotNet@2
+        displayName: Install .NET SDK
+        inputs:
+          version: 8.x
+          performMultiLevelLookup: true
+
+      - task: NuGetAuthenticate@1
+        displayName: Authenticate with NuGet Feed
+
+      - script: |
+          dotnet restore ${{ parameters.solutionPath }} 
+        displayName: Restore Packages
+
+      - script: |
+          dotnet test ${{ parameters.solutionPath }} \
+            --no-restore \
+            --logger trx \
+            --results-directory ./TestResults
+        displayName: Run Unit Tests
+
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testRunner: VSTest
+          searchFolder: ./TestResults/
+          testResultsFiles: '*.trx'
+
+      - script: |
+          dotnet build ${{ parameters.solutionPath }} \
+            --no-restore \
+            -c Release 
+        displayName: 'Build Solution'
+        condition: and(succeeded(), ${{ eq(parameters.publishNuGets, true) }})
+
+      - script: |
+          dotnet pack ${{ parameters.solutionPath }} \
+            --no-build \
+            -p:Version=$(Build.BuildNumber) \
+            -o ./nuget-packages
+        displayName: 'Package Solution'
+        condition: and(succeeded(), ${{ eq(parameters.publishNuGets, true) }})
+
+      - task: NuGetAuthenticate@1
+        displayName: 'Authenticate with NuGet Feed'
+        condition: and(succeeded(), ${{ eq(parameters.publishNuGets, true) }})
+
+      - script: |
+          dotnet nuget push \
+            --source 'https://pkgs.dev.azure.com/${{ parameters.organization }}/_packaging/${{ parameters.organization }}/nuget/v3/index.json' \
+            --api-key az ./nuget-packages/*.nupkg
+        displayName: 'Push NuGet Package'
+        condition: and(succeeded(), ${{ eq(parameters.publishNuGets, true) }})

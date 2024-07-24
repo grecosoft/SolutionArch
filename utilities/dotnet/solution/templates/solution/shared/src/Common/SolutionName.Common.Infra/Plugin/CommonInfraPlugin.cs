@@ -5,7 +5,7 @@ namespace SolutionName.Common.Infra.Plugin;
 
 public class CommonInfraPlugin : PluginBase
 {
-    public override string PluginId => "[nf:infra-id]";
+    public override string PluginId => "[nf:infra-plugin-id]";
     public override PluginTypes PluginType => PluginTypes.CorePlugin;
     public override string Name => "SolutionName Common Service Components";
 
