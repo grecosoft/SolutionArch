@@ -169,3 +169,16 @@ resource "azuredevops_build_definition" "solution_builds" {
     yml_path    = "templates/${each.key}.yml"
   }
 }
+
+// -----------------------------------------------------------------------
+// The solution project and repository are exposed for use by services
+// from which the solution is comprised and reference by their build
+// definitions.
+// -----------------------------------------------------------------------
+output "solution_project_id" {
+  value = data.azuredevops_project.solution_project.id
+}
+
+output "solution_repo_id" {
+  value = data.azuredevops_git_repository.solution_repo.id
+}

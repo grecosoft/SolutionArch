@@ -1,0 +1,60 @@
+{
+    "symbolInfo": {
+      "terraformResourceGroup": {
+        "longName": "terraform-resource-group",
+        "shortName": "terraform-rg"
+      },
+      "terraformStorageAccount": {
+        "longName": "terraform-storage-account",
+        "shortName": "terraform-sa"
+      },
+      "solutionName": {
+        "longName": "solution-name",
+        "shortName": "sln"
+      },
+      "serviceSame": {
+        "longName": "service-name",
+        "shortName": "sn"
+      },
+      "port": {
+        "longName": "port",
+        "shortName": "p"
+      },
+      "devopsType": {
+        "longName": "devops-type",
+        "shortName": "devops"
+      },
+      "githubAccount": {
+        "longName": "github-account",
+        "shortName": "github"
+      },
+      "devOpsOrgName": {
+        "longName": "devops-organization",
+        "shortName": "devops-org"
+      },
+      "aksResourceGroup": {
+        "longName": "aks-resource-group",
+        "shortName": "aks-rg"
+      },
+      "aksName": {
+        "longName": "aks-name",
+        "shortName": "aks"
+      },
+      "acrName": {
+        "longName": "acr-name",
+        "shortName": "acr"
+      },
+      "chartVersion": {
+        "longName": "chart-version",
+        "shortName": "cv"
+      },
+      "registry": {
+        "longName": "registry",
+        "shortName": "reg"
+      },
+      "host": {
+        "longName": "host-name",
+        "shortName": "hn"
+      }
+    }
+  }

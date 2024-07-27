@@ -1,0 +1,23 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - microservices/Solution.Context
+
+pool:
+  vmImage: ubuntu-latest
+
+name: '1.0.$(Rev:r)'
+
+stages:
+- template: shared/microservice-pipeline.yml
+  parameters:
+    solutionPath: microservices/Solution.Context/src
+    solutionName: [nf:solution-name]
+    serviceName: [nf:service-name]
+    dockerFilePath: microservices/Solution.Context
+    imageVersion: $(Build.BuildNumber)
+    chartName: microservice
+    chartVersion: '1.0.7'

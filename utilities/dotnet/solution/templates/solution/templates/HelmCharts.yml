@@ -25,7 +25,7 @@ steps:
 - task: AzureCLI@2
   displayName: Azure CLI
   inputs:
-    azureSubscription: AdoPipelineConnection
+    azureSubscription: ado-pipeline-[nf:solution-name]
     addSpnToEnvironment: true
     scriptType: bash
     scriptLocation: inlineScript
@@ -46,3 +46,4 @@ steps:
 
 - script: helm push microservice-$(Build.BuildNumber).tgz oci://$(EnvAcrName).azurecr.io/$(solutionName)/charts
   displayName: Push Helm Chart to Repo
+  

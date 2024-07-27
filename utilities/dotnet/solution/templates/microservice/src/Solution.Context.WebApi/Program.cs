@@ -3,18 +3,14 @@ using Solution.Context.Domain.Plugin;
 using Solution.Context.Infra.Plugin;
 using Solution.Context.WebApi.Plugin;
 using NetFusion.Core.Settings.Plugin;
-#if (useKubernetes)
 using NetFusion.Web.FileProviders;
-#endif
 
 var builder = WebApplication.CreateBuilder(args);
 
-#if (useKubernetes)
 builder.Configuration.AddJsonFile(CheckSumFileProvider.FromRelativePath("configs"), 
     "appsettings.json", 
     optional: true, 
     reloadOnChange: true).AddEnvironmentVariables();
-#endif
 
 // Configure Logging:
 InitializeLogger();
@@ -70,12 +66,9 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
 
-#if (useKubernetes)
 app.MapHealthCheck();
 app.MapStartupCheck();
 app.MapReadinessCheck();
-#endif
-
 
 if (app.Environment.IsDevelopment())
 {

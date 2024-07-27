@@ -27,6 +27,10 @@
       "githubAccount": {
         "longName": "github-account",
         "shortName": "github"
+      },
+      "devOpsOrgName": {
+        "longName": "devops-organization",
+        "shortName": "devops-org"
       }
     }
   }

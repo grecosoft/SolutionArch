@@ -38,7 +38,7 @@ jobs:
       - task: AzureCLI@2
         displayName: Azure CLI
         inputs:
-          azureSubscription: AdoPipelineConnection
+          azureSubscription: ado-pipeline-[nf:solution-name]
           addSpnToEnvironment: true
           scriptType: bash
           scriptLocation: inlineScript

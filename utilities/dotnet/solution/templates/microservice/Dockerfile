@@ -1,7 +1,10 @@
 FROM  mcr.microsoft.com/dotnet/sdk:8.0 AS restore
 WORKDIR /build/src
 
+#if (useGitHub)
 ARG NUGET_USERNAME
+#endif
+
 ARG NUGET_PASSWORD
 
 # --------------------------------------------------------------------------------------
@@ -13,6 +16,10 @@ ARG NUGET_PASSWORD
 # - Since the source of the microservice will change the most often, these layers will
 #   be reused and will not have be recreated when the updated source is built. 
 # --------------------------------------------------------------------------------------
+
+#if (useAdo)      
+RUN curl -L https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.sh
+#endif
 
 # Copy microservice components:
 COPY ./src/Components/Solution.Context.App/*.csproj ./Components/Solution.Context.App/
@@ -26,12 +33,22 @@ COPY ./src/Solution.Context.WebApi/*.csproj ./Solution.Context.WebApi/
 # Copy the solution file to restore all projects:
 COPY ./src/Solution.Context.sln ./
 
+#if (useGitHub)
 RUN dotnet nuget add source https://nuget.pkg.github.com/[nf:github-account]/index.json \
       --name="GitHub Package Repository" \
       --username ${NUGET_USERNAME} \
       --valid-authentication-types basic \
       --store-password-in-clear-text \
       --password ${NUGET_PASSWORD}
+#endif
+
+#if (useAdo)
+RUN dotnet nuget add source    \
+      --name="Package Repository" \
+      --username "notused" \
+      --store-password-in-clear-text \
+      --password ${NUGET_PASSWORD}
+#endif
 
 RUN dotnet restore 
 
