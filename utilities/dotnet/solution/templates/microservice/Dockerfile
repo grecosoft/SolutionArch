@@ -43,7 +43,7 @@ RUN dotnet nuget add source https://nuget.pkg.github.com/[nf:github-account]/ind
 #endif
 
 #if (useAdo)
-RUN dotnet nuget add source    \
+RUN dotnet nuget add source https://pkgs.dev.azure.com/[nf:devops-organization]/_packaging/[nf:devops-organization]/nuget/v3/index.json \
       --name="Package Repository" \
       --username "notused" \
       --store-password-in-clear-text \

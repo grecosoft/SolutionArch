@@ -3,7 +3,7 @@
     "title": "NetFusion Microservice Template",
     "required": [
         "environment",
-        "name",
+        "service",
         "serviceAccount",
         "port",
         "replicas",

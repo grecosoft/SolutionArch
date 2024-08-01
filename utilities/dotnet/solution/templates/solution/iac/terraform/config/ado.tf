@@ -95,7 +95,7 @@ resource "azurerm_role_assignment" "AdoAacContributor" {
 // the specific environment.  These variables are used by the pipeline
 // when deploying to associated environment.
 // -----------------------------------------------------------------------
-resource "azuredevops_variable_group" "developer" {
+resource "azuredevops_variable_group" "var_group" {
   project_id   = data.azuredevops_project.solution_project.id
   name         = var.solution.environment
   description  = "${var.solution.environment} environment group"
@@ -130,6 +130,11 @@ resource "azuredevops_variable_group" "developer" {
     name  = "EnvAppConfigName"
     value = module.app_config.app_config_name
   }
+}
+
+resource "azuredevops_environment" "environment" {
+  project_id = azuredevops_project.solution_project.id
+  name       = var.solution.environment
 }
 
 // -----------------------------------------------------------------------
