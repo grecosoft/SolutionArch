@@ -33,7 +33,7 @@ module "workload_identity" {
 
 //-- Create the Azure resources used by the solution and the associated
 //   Kubernetes controller used to integrate the Azure resource for use
-//   by solution defined microservices:
+//   by solution defined services:
 module "key_vault" {
   source                     = "./modules/key_vault"
   identity                   = module.workload_identity.identity
@@ -46,9 +46,6 @@ module "key_vault" {
   purge_protection_enabled   = var.solution.keyvault.purge_protection_enabled
 }
 
-//-- Create the Azure resources used by the solution and the associated
-//   Kubernetes controller used to integrate the Azure resource for use
-//   by solution defined microservices:
 module "app_config" {
   source                  = "./modules/app_config"
   resource_group          = azurerm_resource_group.solution_rg.name
@@ -63,14 +60,36 @@ module "app_config" {
   depends_on              = [module.key_vault]
 }
 
+// Install helm charts to create resources used by the solution:
 module "helm_installs" {
   source             = "./modules/helm_installs"
   solution_namespace = kubernetes_namespace.solution_ns.metadata[0].name
 }
 
-locals {
-  tenant_id           = module.workload_identity.identity.tenant_id
-  workload_client_id  = module.workload_identity.identity.client_id
-  app_config_endpoint = module.app_config.app_config_endpoint
-  key_vault_name      = module.key_vault.key_vault_name
+// Application Configuration Data required when deploying solution services.
+// The templates/shared/deploy-service-pipeline.yml and ./github/workflows/shared-deploy-workflow.yml
+// buid definitions reads these values from the app-configuration service for the environment being
+// deployed to and passes them to the Helm chart when deploying the service to Kubernetes.
+resource "azurerm_app_configuration_key" "SolutionTenantId" {
+  configuration_store_id = module.app_config.app_config_id
+  key                    = "SolutionTenantId"
+  value                  = module.workload_identity.identity.tenant_id
+}
+
+resource "azurerm_app_configuration_key" "SolutionClientId" {
+  configuration_store_id = module.app_config.app_config_id
+  key                    = "SolutionClientId"
+  value                  = module.workload_identity.identity.client_id
+}
+
+resource "azurerm_app_configuration_key" "SolutionAppConfigEndpoint" {
+  configuration_store_id = module.app_config.app_config_id
+  key                    = "SolutionAppConfigEndpoint"
+  value                  = module.app_config.app_config_endpoint
+}
+
+resource "azurerm_app_configuration_key" "SolutionKeyVaultName" {
+  configuration_store_id = module.app_config.app_config_id
+  key                    = "SolutionKeyVaultName"
+  value                  = module.key_vault.key_vault_name
 }

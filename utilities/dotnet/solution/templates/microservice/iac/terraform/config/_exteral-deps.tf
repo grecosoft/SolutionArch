@@ -1,6 +1,8 @@
 data "terraform_remote_state" "solution" {
   backend = "azurerm"
 
+  // A service's specific Terraform configuration can access the state
+  // associated with the overall solution.
   config = {
     resource_group_name  = var.resource_group_name
     storage_account_name = var.storage_account_name
@@ -9,6 +11,7 @@ data "terraform_remote_state" "solution" {
   }
 }
 
+// Local variables referencing solution level state.
 locals {
   solution_project_id              = data.terraform_remote_state.solution.outputs.solution_project_id
   solution_repo_id                 = data.terraform_remote_state.solution.outputs.solution_repo_id

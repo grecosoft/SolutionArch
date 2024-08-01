@@ -2,11 +2,6 @@ environment: prd
 
 replicas: 1
 
-tenantId: ""
-managedIdentityClientId: ""
-appConfigEndpoint: ""
-keyVaultName: ""
-
 image:
   tag: latest
 
@@ -25,5 +20,3 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
-
-

@@ -2,6 +2,9 @@ terraform {
   required_version = ">=1.0"
 
   backend "azurerm" {
+    // The resource_group_name, storage_account_name, container_name for the solution's 
+    // Terraform storage, for a specific environment, are passed by setting the
+    // -backend-config argument when initializing the configuration.  
     key = "solution.tfstate"
   }
   required_providers {

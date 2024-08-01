@@ -115,7 +115,7 @@
       "type": "parameter",
       "isRequired": true,
       "datatype": "string",
-      "replaces": "[nf:chartVersion]",
+      "replaces": "[nf:chart-version]",
       "description": "The version of the Microservice Helm Chart used to deploy. (example: 1.0.0)"
     },
     "host": {

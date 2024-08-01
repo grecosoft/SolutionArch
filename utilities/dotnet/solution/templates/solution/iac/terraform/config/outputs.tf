@@ -1,3 +1,5 @@
+# Output variables for solution level resources that can be
+# referenced by service specific Terriform configuraitons.
 output "resource_group_name" {
   value = azurerm_resource_group.solution_rg.name
 }

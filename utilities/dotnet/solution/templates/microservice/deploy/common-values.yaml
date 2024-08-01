@@ -1,5 +1,5 @@
 solution: [nf:solution-name]
-name: [nf:service-name]
+service: [nf:service-name]
 
 serviceAccount: [nf:solution-name]-identity
 port: [nf:port]

@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "microservice.name" . }}
+  name: {{ include "service.name" . }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicas }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "microservice.selectorLabels" . | nindent 6 }}
+      {{- include "service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -17,15 +17,15 @@ spec:
       {{- end }}
       labels:
         azure.workload.identity/use: "true"
-        {{- include "microservice.labels" . | nindent 8 }}
+        {{- include "service.labels" . | nindent 8 }}
 	      {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount }}
       containers:
-        - name: {{ include "microservice.name" . }}
-          image: "{{ include "microservice.image" . }}"
+        - name: {{ include "service.name" . }}
+          image: "{{ include "service.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: ASPNETCORE_URLS
@@ -37,7 +37,7 @@ spec:
               {{- end }}
           envFrom:
           - secretRef:
-              name: {{ include "microservice.name" . }}-config-secrets
+              name: {{ include "service.name" . }}-config-secrets
           ports:
             - containerPort: {{ .Values.port }}
               protocol: TCP
@@ -80,7 +80,7 @@ spec:
       volumes:
         - name: configs-volume 
           configMap: 
-            name: {{ include "microservice.name" . }}-configs
+            name: {{ include "service.name" . }}-configs
             items:
             - key: app-configurations
               path: appsettings.json

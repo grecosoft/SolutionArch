@@ -172,8 +172,8 @@ resource "azuredevops_build_definition" "solution_builds" {
 
 // -----------------------------------------------------------------------
 // The solution project and repository are exposed for use by services
-// from which the solution is comprised and reference by their build
-// definitions.
+// from which the solution is comprised and reference by their specific
+// service build definitions.
 // -----------------------------------------------------------------------
 output "solution_project_id" {
   value = data.azuredevops_project.solution_project.id

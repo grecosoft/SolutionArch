@@ -1,6 +1,18 @@
-environment: ""
+# These values are set by the deploy builds and are sourced
+# by calling Azure App Configuration for the values associated
+# with the solution to which the service belongs.  This values
+# are set in ./iac/terraform/config/main.tf
+tenantId: ""
+managedIdentityClientId: ""
+appConfigEndpoint: ""
+keyVaultName: ""
+
+# The remaining values are set by the builds when deploying a service by 
+# passing the service's commmon and environment specific Helm environment 
+# vaue files.
 solution: ""
-name: ""
+service: ""
+environment: ""
 
 serviceAccount: ""
 port: 0
@@ -36,12 +48,6 @@ autoscaling:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
 
-tenantId: ""
-managedIdentityClientId: ""
-appConfigEndpoint: ""
-appConfigRefreshEnabled: false
-keyVaultName: ""
-
 gateway: 
   name: ""
   hosts: []
@@ -51,4 +57,4 @@ envNames:
   stg: STAGING
   prd: PRODUCTION
 
-
+appConfigRefreshEnabled: false

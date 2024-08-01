@@ -1,3 +1,4 @@
+# Creates a build pipeline for the serivce based on the shared solution pipeline definitions.
 resource "azuredevops_build_definition" "service_builds" {
   project_id = local.solution_project_id
   name       = "Solution.Context"
@@ -17,6 +18,6 @@ resource "azuredevops_build_definition" "service_builds" {
     repo_type   = "TfsGit"
     repo_id     = local.solution_repo_id
     branch_name = "refs/heads/master"
-    yml_path    = "templates/Solution.Context.yml"
+    yml_path    = "microservices/Solution.Context/templates/Solution.Context.yml"
   }
 }
