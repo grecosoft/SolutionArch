@@ -31,6 +31,14 @@ parameters:
   - name: chartVersion
     type: string
 
+  - name: deployToStg
+    type: boolean
+    default: false
+
+  - name: deployToPrd
+    type: boolean
+    default: false
+
 stages:
   - stage: Test_Service
     jobs:
@@ -60,6 +68,7 @@ stages:
           chartName:        ${{ parameters.chartName }}
 
   - stage: Deploy_STG
+    condition: and(succeeded(), eq(parameters.deployToStg, true))
     jobs:
       - template: deploy-service-pipeline.yml
         parameters:
@@ -71,6 +80,7 @@ stages:
           chartName:        ${{ parameters.chartName }}
 
   - stage: Deploy_PRD
+    condition: and(succeeded(), eq(parameters.deployToPrd, true))
     jobs:
       - template: deploy-service-pipeline.yml
         parameters:

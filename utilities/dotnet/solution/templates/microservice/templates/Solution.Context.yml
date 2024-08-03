@@ -13,3 +13,5 @@ stages:
     imageVersion: $(Build.BuildNumber)
     chartName: microservice
     chartVersion: '[nf:chart-version]'
+    deployToStg: false
+    deployToPrd: false
