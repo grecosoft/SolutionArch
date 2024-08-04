@@ -31,14 +31,6 @@ parameters:
   - name: chartVersion
     type: string
 
-  - name: deployToStg
-    type: boolean
-    default: false
-
-  - name: deployToPrd
-    type: boolean
-    default: false
-
 stages:
   - stage: Test_Service
     jobs:
@@ -67,26 +59,24 @@ stages:
           imageVersion:     ${{ parameters.imageVersion }}
           chartName:        ${{ parameters.chartName }}
 
-  - stage: Deploy_STG
-    condition: and(succeeded(), eq(parameters.deployToStg, true))
-    jobs:
-      - template: deploy-service-pipeline.yml
-        parameters:
-          environment:      stg
-          solutionName:     ${{ parameters.solutionName }}
-          serviceName:      ${{ parameters.serviceName }}
-          chartVersion:     ${{ parameters.chartVersion }}
-          imageVersion:     ${{ parameters.imageVersion }}
-          chartName:        ${{ parameters.chartName }}
+  # - stage: Deploy_STG
+  #   jobs:
+  #     - template: deploy-service-pipeline.yml
+  #       parameters:
+  #         environment:      stg
+  #         solutionName:     ${{ parameters.solutionName }}
+  #         serviceName:      ${{ parameters.serviceName }}
+  #         chartVersion:     ${{ parameters.chartVersion }}
+  #         imageVersion:     ${{ parameters.imageVersion }}
+  #         chartName:        ${{ parameters.chartName }}
 
-  - stage: Deploy_PRD
-    condition: and(succeeded(), eq(parameters.deployToPrd, true))
-    jobs:
-      - template: deploy-service-pipeline.yml
-        parameters:
-          environment:      prd
-          solutionName:     ${{ parameters.solutionName }}
-          serviceName:      ${{ parameters.serviceName }}
-          chartVersion:     ${{ parameters.chartVersion }}
-          imageVersion:     ${{ parameters.imageVersion }}
-          chartName:        ${{ parameters.chartName }}
+  # - stage: Deploy_PRD
+  #   jobs:
+  #     - template: deploy-service-pipeline.yml
+  #       parameters:
+  #         environment:      prd
+  #         solutionName:     ${{ parameters.solutionName }}
+  #         serviceName:      ${{ parameters.serviceName }}
+  #         chartVersion:     ${{ parameters.chartVersion }}
+  #         imageVersion:     ${{ parameters.imageVersion }}
+  #         chartName:        ${{ parameters.chartName }}
