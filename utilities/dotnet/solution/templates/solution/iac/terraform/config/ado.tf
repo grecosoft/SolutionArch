@@ -133,7 +133,7 @@ resource "azuredevops_variable_group" "var_group" {
 }
 
 resource "azuredevops_environment" "environment" {
-  project_id = azuredevops_project.solution_project.id
+  project_id = data.azuredevops_project.solution_project.id
   name       = var.solution.environment
 }
 
