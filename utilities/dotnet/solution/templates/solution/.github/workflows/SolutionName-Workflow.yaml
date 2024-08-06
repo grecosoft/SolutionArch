@@ -57,7 +57,7 @@ jobs:
 
     - name: Package Solution
       run: |
-        dotnet pack ./shared/src/HomeLink.sln \
+        dotnet pack ./shared/src \
           --no-build \
           -p:Version=${buildVer} \
           -o ./nuget-packages

@@ -13,8 +13,6 @@ data "terraform_remote_state" "solution" {
 
 // Local variables referencing solution level state.
 locals {
-  solution_project_id              = data.terraform_remote_state.solution.outputs.solution_project_id
-  solution_repo_id                 = data.terraform_remote_state.solution.outputs.solution_repo_id
   solution_resource_group_name     = data.terraform_remote_state.solution.outputs.resource_group_name
   solution_workload_identity       = data.terraform_remote_state.solution.outputs.workload_identity
   solution_key_vault_id            = data.terraform_remote_state.solution.outputs.key_vault_id

@@ -7,8 +7,10 @@ do
         c) cmd=${OPTARG};;
         s) azSubId=${OPTARG};;
         t) azTenId=${OPTARG};;
+#if (useAdo)
         o) azOrgUrl=${OPTARG};;
         p) azPat=${OPTARG};;
+#endif
     esac
 done
 
@@ -27,6 +29,7 @@ if [ ! "$azTenId" ]; then
     exit 1
 fi
 
+#if (useAdo)
 if [ ! "$azOrgUrl" ]; then
     echo "o: DevOps Orgization Url not Specified"
     exit 1
@@ -36,10 +39,14 @@ if [ ! "$azPat" ]; then
     echo "p: DevOps Personal Access Token not Specified"
     exit 1
 fi
+#endif
 
 export TF_DATA_DIR="./environments/$env/.terraform"
+
+#if (useAdo)
 export AZDO_ORG_SERVICE_URL=$azOrgUrl
 export AZDO_PERSONAL_ACCESS_TOKEN=$azPat
+#endif
 
 case $cmd in
 init)

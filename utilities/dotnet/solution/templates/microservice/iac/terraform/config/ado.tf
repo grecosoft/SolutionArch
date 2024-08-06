@@ -1,3 +1,8 @@
+locals {
+  solution_project_id              = data.terraform_remote_state.solution.outputs.solution_project_id
+  solution_repo_id                 = data.terraform_remote_state.solution.outputs.solution_repo_id
+} 
+
 # Creates a build pipeline for the serivce based on the shared solution pipeline definitions.
 resource "azuredevops_build_definition" "service_builds" {
   project_id = local.solution_project_id

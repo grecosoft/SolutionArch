@@ -2,7 +2,6 @@ solution = {
   cluster_resource_group = "[nf:aks-resource-group]"
   cluster_name           = "[nf:aks-name]"
   registry_name          = "[nf:arc-name]"
-  github_account         = "[nf:github-account]"
   environment            = "prod"
   name                   = "SolutionName"
   location               = "eastus"
@@ -14,4 +13,7 @@ solution = {
   appconfig = {
     namespace = "app-config-system"
   }
+//-#if (useGitHub)
+  github_account         = "[nf:github-account]"
+//-#endif
 }

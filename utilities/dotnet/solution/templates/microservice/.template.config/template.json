@@ -176,7 +176,8 @@
           {
             "condition": "(devopsType != ado || devopsType == none)",
             "exclude": [
-              "templates/**/*"
+              "templates/**/*",
+              "iac/terraform/config/ado.tf"
             ]
           },
           {
